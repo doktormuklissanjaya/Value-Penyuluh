@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Value Penyuluh</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --site-primary: #087e75;
+  --site-secondary: #eaf5f2;
+  --site-background: #f5f8f7;
+  --site-on-primary: #ffffff;
+  --site-on-secondary: #173b39;
+  --site-on-background: #183432;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  --surface: light-dark(#ffffff, #172321);
+  --surface-soft: light-dark(#f0f6f4, #202e2b);
+  --text: light-dark(#183432, #edf7f4);
+  --muted: light-dark(#5c716e, #b0c2be);
+  --border: light-dark(#d8e5e1, #394b47);
+  --field: light-dark(#ffffff, #172321);
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--site-font-body); background: var(--site-background); color: var(--text); }
+.app-root { min-height: 100vh; width: 100%; background-color: var(--site-background); color: var(--site-on-background); border-radius: 0; }
+.hero { background: var(--site-primary); color: var(--site-on-primary); padding: calc(34px * var(--site-spacing-scale)) max(22px, calc((100vw - 1080px) / 2)); position: relative; overflow: hidden; }
+.hero:after { content:""; position:absolute; width:280px;height:280px;border:1px solid rgba(255,255,255,.18);border-radius:50%;right:8%;top:-150px;opacity:var(--site-decoration-opacity);pointer-events:none; }
+.kicker { text-transform:uppercase; letter-spacing:.14em; font-size:.76rem; font-weight:800; opacity:.82; }
+h1 { font-family:var(--site-font-heading); font-size:calc(clamp(1.8rem, 4vw, 3rem) * var(--site-heading-scale)); line-height:1.08; margin:12px 0; max-width:760px; }
+.hero p { max-width:720px; line-height:1.65; margin:0; color:rgba(255,255,255,.88); }
+.wrap { max-width:1080px; margin:0 auto; padding:calc(26px * var(--site-spacing-scale)) 22px 46px; }
+.steps { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px; }
+.step { background:var(--surface); border:1px solid var(--border); border-radius:calc(14px * var(--site-radius-scale)); padding:15px; display:flex; gap:10px; align-items:center; }
+.step-num { background:var(--site-secondary); color:var(--site-primary); width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-weight:800;flex-shrink:0; }
+.step strong { display:block; font-size:.92rem; }
+.step small { color:var(--muted); display:block; margin-top:3px; }
+.layout { display:grid; grid-template-columns:minmax(0, .92fr) minmax(0, 1.08fr); gap:20px; align-items:start; }
+.panel { background:var(--surface); border:1px solid var(--border); border-radius:calc(18px * var(--site-radius-scale)); padding:calc(22px * var(--site-spacing-scale)); box-shadow:0 8px 28px rgba(19,56,49,.045); }
+h2 { font-size:calc(1.22rem * var(--site-heading-scale)); margin:0 0 7px; color:var(--text); }
+.intro { margin:0 0 20px; color:var(--muted); line-height:1.55; font-size:.94rem; }
+label, .field-label { display:block; font-size:.88rem; font-weight:750; margin:0 0 8px; }
+.field { margin-bottom:18px; }
+select, input, textarea { width:100%; background:var(--field); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:12px 13px; font:inherit; outline:none; }
+select:focus, input:focus, textarea:focus { border-color:var(--site-primary); box-shadow:0 0 0 3px color-mix(in srgb, var(--site-primary) 16%, transparent); }
+textarea { min-height:82px; resize:vertical; line-height:1.5; }
+.hint { color:var(--muted); font-size:.78rem; margin-top:6px; line-height:1.45; }
+.hidden { display:none !important; }
+.btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+button { border:0; border-radius:11px; padding:12px 16px; font:inherit; font-weight:750; cursor:pointer; transition:transform .12s ease, opacity .12s ease; }
+button:hover { transform:translateY(-1px); }
+.primary { background:var(--site-primary); color:white; }
+.secondary { background:var(--site-secondary); color:var(--site-on-secondary); }
+.output { min-height:400px; }
+.output-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:18px; }
+.pill { display:inline-flex; background:var(--site-secondary); color:var(--site-primary); padding:6px 10px; border-radius:999px; font-size:.75rem; font-weight:800; margin-bottom:10px; }
+.placeholder { min-height:280px; display:grid; place-items:center; text-align:center; color:var(--muted); padding:30px; border:1px dashed var(--border); border-radius:14px; line-height:1.6; }
+.placeholder .symbol { font-size:2rem; margin-bottom:10px; }
+.result h3 { font-size:1rem; margin:22px 0 8px; color:var(--site-primary); }
+.result p, .result li { line-height:1.6; font-size:.91rem; }
+.result ul, .result ol { padding-left:20px; margin:7px 0; }
+.value-list { display:grid; gap:10px; }
+.value-item { border:1px solid var(--border); border-radius:12px; padding:12px 13px; }
+.value-item strong { display:block; margin-bottom:4px; }
+.value-item p { margin:0; color:var(--text); }
+.v { color:#087e75; } .a { color:#c65c13; } .l { color:#218543; } .u { color:#3478c0; } .e { color:#8052ac; }
+.notice { background:var(--surface-soft); border-radius:12px; padding:13px 15px; color:var(--muted); font-size:.82rem; line-height:1.55; margin-top:16px; }
+footer { text-align:center; color:var(--muted); font-size:.78rem; padding:0 20px 28px; }
+ .creator { margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,.25); font-size:.68rem; line-height:1.35; opacity:.88; }
+.print-credit { display:none; }
+.creator-detail { margin-top:18px; padding:16px 18px; border:1px solid var(--border); border-left:4px solid var(--site-primary); border-radius:12px; background:var(--surface-soft); line-height:1.6; }
+.creator-detail p { margin:6px 0 0; }
+ @media print {
+  @page { margin: 18mm 15mm 20mm; }
+  body, .app-root { background:#fff !important; color:#111 !important; }
+  .hero { background:#fff !important; color:#111 !important; padding:0 0 14px !important; border-bottom:2px solid #087e75; }
+  .hero p { color:#333 !important; }
+  .hero:after, .steps, .btn-row, #placeholder, .layout > section:first-child, footer { display:none !important; }
+  .wrap { max-width:none; padding:14px 0 0; }
+  .layout { display:block; }
+  .panel { border:0; box-shadow:none; padding:0; }
+  .output { min-height:0; }
+  .print-credit { display:none !important; }
+  .creator-detail { display:none !important; }
+  .result { color:#111 !important; }
+  .result h3 { break-after:avoid; }
+  .value-item { break-inside:avoid; }
+ }
+@media (max-width:780px) { .layout { grid-template-columns:1fr; } .steps { grid-template-columns:1fr; } .hero { padding:28px 22px; } .output { min-height:0; } }
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="app-root">
+  <header class="hero">
+    <div class="kicker">Value Penyuluh • Simulator Program</div>
+    <h1>Value Penyuluh</h1>
+    <p>Metode VALUE digunakan sebagai kerangka untuk merancang program penyuluhan yang berangkat dari kebutuhan nyata masyarakat, mendorong perubahan yang terukur, memperkuat kolaborasi, dan mengevaluasi dampak secara berkelanjutan.</p>
+    <div class="creator"><strong>Pencipta Metode VALUE:</strong> Dr. Muklis Sanjaya, S.H.I., S.Sos., M.Pd.<br><span>Penyuluh Agama Islam KUA Lamongan/Ketua Umum DPP Pena Dai Nusantara</span></div>
+  </header>
+  <main class="wrap">
+    <section class="creator-detail" aria-label="Profil pencipta metode VALUE">
+      <h2>Pencipta Metode VALUE</h2>
+      <p><strong>Dr. Muklis Sanjaya, S.H.I., S.Sos., M.Pd.</strong><br>Penyuluh Agama Islam KUA Lamongan/Ketua Umum DPP Pena Dai Nusantara.</p>
+      <p>Metode VALUE digunakan dalam simulator ini sebagai kerangka untuk merancang program penyuluhan yang berangkat dari kebutuhan nyata masyarakat, mendorong perubahan yang terukur, memperkuat kolaborasi, dan mengevaluasi dampak secara berkelanjutan.</p>
+    </section>
+    <div class="steps" aria-label="Alur simulasi">
+      <div class="step"><div class="step-num">1</div><div><strong>Identifikasi</strong><small>Pilih masalah prioritas</small></div></div>
+      <div class="step"><div class="step-num">2</div><div><strong>Pahami kebutuhan</strong><small>Tentukan sasaran dan kebutuhan</small></div></div>
+      <div class="step"><div class="step-num">3</div><div><strong>Susun program</strong><small>Hasilkan rancangan VALUE</small></div></div>
+    </div>
+    <div class="layout">
+      <section class="panel">
+        <h2>Pendahuluan</h2>
+        <p class="intro">Value Penyuluh membantu Penyuluh Agama Islam merancang program berbasis VALUE yang berangkat dari kebutuhan nyata kelompok binaan. Isi identitas penyuluh dan data kelompok binaan terlebih dahulu, kemudian identifikasi masalah, tentukan kebutuhan, dan susun rancangan program. Hasil rancangan program merupakan draf awal yang perlu divalidasi sesuai kondisi lapangan.</p>
+        <h2>Identitas Penyuluh Agama Islam</h2>
+        <p class="intro">Lengkapi identitas agar tercantum pada rancangan program.</p>
+        <div class="field">
+          <label for="counselorName">Nama lengkap beserta gelar</label>
+          <input id="counselorName" maxlength="180" placeholder="Contoh: Dr. Muklis Sanjaya, S.H.I., S.Sos., M.Pd.">
+        </div>
+        <div class="field">
+          <label for="position">Jabatan</label>
+          <input id="position" maxlength="180" placeholder="Contoh: Penyuluh Agama Islam Ahli Madya">
+        </div>
+        <div class="field">
+          <label for="workUnit">Asal satuan kerja (KUA)</label>
+          <input id="workUnit" maxlength="180" placeholder="Contoh: KUA Kecamatan Bluluk, Kabupaten Lamongan">
+        </div>
+        <h2>Identitas Kelompok Binaan</h2>
+        <div class="field">
+          <label for="groupName">Nama kelompok binaan</label>
+          <select id="groupName">
+            <optgroup label="Kelompok Binaan Umum">
+              <option>Masjid / Takmir Masjid</option>
+              <option>Jamaah Masjid / Mushola</option>
+              <option>Remaja Masjid (Remas) / Pemuda Masjid</option>
+              <option>Majelis Taklim Bapak-Bapak</option>
+              <option>Majelis Taklim Ibu-Ibu</option>
+              <option>Majelis Taklim Kontemporer / Kelompok Kajian Umum</option>
+              <option>Lembaga Pendidikan Al-Qur'an (LPQ / TPQ / TPA / RTQ)</option>
+            </optgroup>
+            <optgroup label="Kelompok Binaan Khusus">
+              <option>Kelompok Rentan Stunting &amp; Gizi (Calon Pengantin, Ibu Hamil, Ibu Menyusui)</option>
+              <option>Kelompok Remaja &amp; Kesehatan Reproduksi (Pencegahan Pernikahan Dini)</option>
+              <option>Kelompok Edukasi Sanitasi &amp; Lingkungan Hidup</option>
+              <option>Kelompok Pelaku Usaha Mikro / UMKM (Sertifikasi Halal)</option>
+              <option>Kelompok Pengelola ZISWAF (UPZ &amp; Pegiat Wakaf)</option>
+              <option>Komunitas Pemberdayaan Ekonomi berbasis Madrasah/Pesantren</option>
+              <option>Kelompok Keluarga Sakinah &amp; Sadar Hukum Perkawinan (Pencegahan KDRT)</option>
+              <option>Kelompok Mediasi dan Advokasi Hak Keagamaan Umat</option>
+              <option>Kelompok Sadar Regulasi Keagamaan &amp; Ormas</option>
+              <option>Komunitas Netizen / Pegiat Media Sosial Keagamaan (Anti-Hoaks &amp; Radikalisme)</option>
+              <option>Kelompok Pembuat Konten Kreatif Dakwah (Syiar Digital)</option>
+              <option>Warga Binaan Pemasyarakatan (Lapas / Rutan)</option>
+              <option>Kelompok Masyarakat Daerah Tertinggal / Terpencil</option>
+              <option>Kelompok Masyarakat Daerah Rawan Konflik / Rawan Akidah</option>
+              <option>Komunitas Marginal / Disabilitas (Berkebutuhan Khusus)</option>
+            </optgroup>
+            <option value="__other_group__">Lainnya (Isi Sendiri)</option>
+          </select>
+        </div>
+        <div class="field hidden" id="otherGroupWrap">
+          <label for="otherGroup">Tuliskan nama kelompok binaan</label>
+          <input id="otherGroup" maxlength="180" placeholder="Masukkan nama kelompok binaan">
+        </div>
+        <div class="field">
+          <label for="groupAddress">Alamat kelompok binaan</label>
+          <textarea id="groupAddress" maxlength="350" placeholder="Desa/kelurahan, kecamatan, kabupaten, dan keterangan lokasi"></textarea>
+        </div>
+        <h2>Identifikasi Masalah Masyarakat</h2>
+        <p class="intro">Isi berdasarkan kondisi yang ditemukan pada kelompok binaan. Pilih satu masalah atau tulis masalah lain dari wilayah kerja Anda.</p>
+        <div class="field">
+          <label for="problem">1. Masalah prioritas</label>
+          <select id="problem">
+            <option value="Ketahanan keluarga">Ketahanan keluarga</option>
+            <option value="Anak yatim, terlantar, dan kelompok rentan">Anak yatim, terlantar, dan kelompok rentan</option>
+            <option value="Literasi Al-Qur’an dan pemahaman ibadah">Literasi Al-Qur’an dan pemahaman ibadah</option>
+            <option value="Akhlak dan budi pekerti generasi muda">Akhlak dan budi pekerti generasi muda</option>
+            <option value="Kerukunan dan moderasi beragama">Kerukunan dan moderasi beragama</option>
+            <option value="Kerentanan lansia dan kesepian sosial">Kerentanan lansia dan kesepian sosial</option>
+            <option value="Pemberdayaan ekonomi umat">Pemberdayaan ekonomi umat</option>
+            <option value="Literasi digital dan hoaks keagamaan">Literasi digital dan hoaks keagamaan</option>
+            <option value="Konsistensi ibadah dan kepedulian sosial">Konsistensi ibadah dan kepedulian sosial</option>
+            <option value="Integritas, kejujuran, dan antikorupsi">Integritas, kejujuran, dan antikorupsi</option>
+            <option value="__other__">11. Masalah lainnya (tulis sendiri)</option>
+          </select>
+        </div>
+        <div class="field hidden" id="otherWrap">
+          <label for="otherProblem">Tuliskan masalah dari wilayah Anda</label>
+          <input id="otherProblem" maxlength="180" placeholder="Contoh: Rendahnya kepedulian warga terhadap kebersihan masjid">
+        </div>
+        <div class="field">
+          <label for="target">2. Siapa yang paling terdampak?</label>
+          <input id="target" maxlength="180" placeholder="Contoh: Remaja usia 13–18 tahun" value="Remaja di wilayah binaan">
+          <div class="hint">Sebutkan kelompok sasaran yang paling merasakan masalah tersebut.</div>
+        </div>
+        <div class="field">
+          <label for="need">3. Apa kebutuhan utamanya?</label>
+          <label for="needReference">Referensi kebutuhan sesuai masalah prioritas (opsional)</label>
+          <select id="needReference">
+            <option value="">Pilih referensi kebutuhan atau isi sendiri di bawah</option>
+            <option value="__custom__">Isi sendiri kebutuhan utama</option>
+          </select>
+          <div class="hint">Pilihan referensi akan menyesuaikan masalah prioritas. Anda tetap dapat mengubah atau menulis kebutuhan sendiri pada kolom di bawah.</div>
+          <textarea id="need" maxlength="500" placeholder="Contoh: Pembinaan budi pekerti dengan pendekatan personal">Pembinaan budi pekerti dengan pendekatan personal</textarea>
+          <div class="hint">Tuliskan kebutuhan, bukan hanya kegiatan yang ingin dilakukan.</div>
+        </div>
+        <div class="field">
+          <label for="duration">4. Jangka waktu program</label>
+          <select id="duration">
+            <option value="1 bulan">1 bulan</option>
+            <option value="3 bulan" selected>3 bulan</option>
+            <option value="6 bulan">6 bulan</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="count">5. Perkiraan jumlah sasaran</label>
+          <input id="count" type="number" min="1" max="10000" value="20">
+        </div>
+        <div class="btn-row">
+          <button class="primary" id="generate">Susun program VALUE →</button>
+          <button class="secondary" id="reset" type="button">Atur ulang</button>
+        </div>
+      </section>
+      <section class="panel output" aria-live="polite">
+        <div class="output-top"><div><span class="pill">HASIL RANCANGAN PROGRAM VALUE PENYULUH</span><h2>Rancangan program Anda</h2><p class="intro" style="margin-bottom:0">Program akan tersusun berdasarkan masalah dan kebutuhan yang Anda masukkan.</p></div></div>
+        <div id="placeholder" class="placeholder"><div><div class="symbol">✦</div><strong>Program Anda akan muncul di sini</strong><br>Lengkapi identifikasi masalah, lalu tekan <em>Susun program VALUE</em>.</div></div>
+        <div id="result" class="result hidden"></div>
+        <div class="print-credit">Pencipta Metode VALUE: Dr. Muklis Sanjaya, S.H.I., S.Sos., M.Pd. (Penyuluh Agama Islam KUA Lamongan/Ketua Umum DPP Pena Dai Nusantara)</div>
+      </section>
+    </div>
+  </main>
+  <footer>Value Penyuluh • Rancangan yang dihasilkan adalah contoh awal dan perlu disesuaikan dengan kondisi masyarakat binaan.</footer>
+</div>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const problem = $('problem');
+  const otherWrap = $('otherWrap');
+  const otherProblem = $('otherProblem');
+  const groupName = $('groupName');
+  const otherGroupWrap = $('otherGroupWrap');
+  const otherGroup = $('otherGroup');
+  const target = $('target');
+  const need = $('need');
+  const needReference = $('needReference');
+  const duration = $('duration');
+  const count = $('count');
+  const placeholder = $('placeholder');
+  const result = $('result');
+
+  const presets = {
+    'Ketahanan keluarga': {
+      value: 'Terwujudnya keluarga yang sakinah, komunikatif, saling menghormati, dan bertanggung jawab.',
+      analyze: 'Petakan kebutuhan keluarga melalui dialog yang menjaga privasi: komunikasi pasangan, pengasuhan, konflik, dan dukungan sosial.',
+      launch: 'Laksanakan edukasi keluarga sakinah, latihan komunikasi sehat, refleksi peran keluarga, dan pendampingan sesuai kebutuhan.',
+      unite: 'Libatkan KUA, pemerintah desa, kader keluarga, tokoh masyarakat, serta layanan konseling yang relevan.',
+      measure: 'Keluarga menyusun kesepakatan komunikasi atau pengasuhan dan menunjukkan perbaikan pada indikator yang disepakati.'
+    },
+    'Anak yatim, terlantar, dan kelompok rentan': {
+      value: 'Anak memperoleh pembinaan agama, pengasuhan yang aman, akses pendidikan, dan kesempatan tumbuh secara bermartabat.',
+      analyze: 'Identifikasi kebutuhan ibadah, pendidikan, dukungan psikososial, kebutuhan dasar, serta risiko penelantaran atau kekerasan.',
+      launch: 'Lakukan bimbingan agama dan akhlak, motivasi belajar, pendampingan pengasuh, serta fasilitasi akses bantuan atau rujukan.',
+      unite: 'Koordinasikan KUA, pengasuh, sekolah, pemerintah desa, Dinas Sosial, lembaga sosial, dan lembaga zakat.',
+      measure: 'Perkembangan ibadah dan akhlak tercatat; kebutuhan pendidikan atau perlindungan yang teridentifikasi memperoleh tindak lanjut.'
+    },
+    'Literasi Al-Qur’an dan pemahaman ibadah': {
+      value: 'Masyarakat mampu membaca Al-Qur’an dan melaksanakan ibadah dasar dengan lebih baik dan percaya diri.',
+      analyze: 'Petakan kemampuan awal, hambatan belajar, kebutuhan metode pembelajaran, dan waktu yang tersedia bagi peserta.',
+      launch: 'Buat kelompok belajar sesuai tingkat kemampuan, latihan rutin, pendampingan individual, dan evaluasi bacaan atau praktik ibadah.',
+      unite: 'Libatkan pengurus masjid, guru ngaji, majelis taklim, keluarga, dan lembaga pendidikan keagamaan.',
+      measure: 'Peserta menunjukkan peningkatan pada tes awal-akhir membaca Al-Qur’an atau praktik ibadah yang terstandar sederhana.'
+    },
+    'Akhlak dan budi pekerti generasi muda': {
+      value: 'Terbentuknya remaja yang jujur, santun, disiplin, bertanggung jawab, dan mampu mengendalikan diri.',
+      analyze: 'Identifikasi perilaku yang perlu diperkuat melalui dialog personal, observasi, serta masukan yang relevan tanpa memberi stigma.',
+      launch: 'Lakukan pendampingan personal, refleksi diri, kajian akhlak, latihan mengelola emosi, dan target perubahan perilaku.',
+      unite: 'Libatkan orang tua, guru BK, KUA, pengurus masjid, dan komunitas remaja dengan memperhatikan privasi.',
+      measure: 'Remaja menunjukkan perbaikan pada minimal dua perilaku yang disepakati, berdasarkan catatan awal-akhir dan umpan balik.'
+    },
+    'Kerukunan dan moderasi beragama': {
+      value: 'Terbangunnya sikap saling menghormati, dialog yang sehat, dan kerja sama sosial di tengah perbedaan.',
+      analyze: 'Petakan sumber prasangka, miskomunikasi, atau gesekan serta kelompok yang terdampak.',
+      launch: 'Fasilitasi dialog, edukasi moderasi beragama, kegiatan sosial bersama, dan latihan menyelesaikan perbedaan secara damai.',
+      unite: 'Libatkan tokoh agama, tokoh masyarakat, pemerintah setempat, pemuda, dan unsur masyarakat terkait.',
+      measure: 'Kegiatan kolaboratif terlaksana dan peserta menunjukkan peningkatan pemahaman atau sikap saling menghormati melalui evaluasi.'
+    },
+    'Kerentanan lansia dan kesepian sosial': {
+      value: 'Lansia merasa dihargai, memperoleh dukungan spiritual, dan memiliki kesempatan berinteraksi secara bermakna.',
+      analyze: 'Identifikasi kebutuhan ibadah, akses kegiatan, dukungan keluarga, mobilitas, dan tanda kerentanan sosial.',
+      launch: 'Adakan bimbingan ibadah ramah lansia, kunjungan atau dialog berkala, kelompok dukungan, dan fasilitasi rujukan bila diperlukan.',
+      unite: 'Libatkan keluarga, kader kesehatan, pengurus masjid, komunitas lansia, dan layanan sosial setempat.',
+      measure: 'Lansia yang menjadi sasaran mengikuti pendampingan sesuai kebutuhan dan melaporkan peningkatan dukungan atau keterlibatan sosial.'
+    },
+    'Pemberdayaan ekonomi umat': {
+      value: 'Keluarga memiliki pengetahuan dan dukungan untuk meningkatkan kemandirian ekonomi secara jujur dan bertanggung jawab.',
+      analyze: 'Petakan keterampilan, kendala usaha, literasi keuangan, dan akses terhadap program ekonomi yang tersedia.',
+      launch: 'Berikan edukasi etika usaha, pengelolaan keuangan sederhana, dan fasilitasi pelatihan atau akses program pemberdayaan.',
+      unite: 'Koordinasikan pemerintah desa, lembaga zakat, koperasi, pelaku usaha, dan instansi pemberdayaan terkait.',
+      measure: 'Peserta memiliki rencana usaha atau anggaran sederhana dan memperoleh tindak lanjut sesuai kebutuhan.'
+    },
+    'Literasi digital dan hoaks keagamaan': {
+      value: 'Masyarakat menggunakan media digital secara bijak, aman, santun, dan bertanggung jawab.',
+      analyze: 'Identifikasi kebiasaan berbagi informasi, kesulitan memeriksa sumber, dan risiko penipuan atau konten berbahaya.',
+      launch: 'Latih pemeriksaan sumber, verifikasi informasi keagamaan, etika bermedia, keamanan akun, dan pelaporan konten berisiko.',
+      unite: 'Libatkan sekolah, komunitas digital, pengurus masjid, orang tua, dan mitra literasi yang relevan.',
+      measure: 'Peserta mampu menerapkan langkah verifikasi pada contoh informasi dan menyebutkan tindakan aman sebelum membagikan konten.'
+    },
+    'Konsistensi ibadah dan kepedulian sosial': {
+      value: 'Terbangunnya kebiasaan ibadah yang konsisten dan kepedulian terhadap sesama.',
+      analyze: 'Identifikasi hambatan rutinitas ibadah, keterlibatan sosial, dukungan lingkungan, dan kebiasaan sehari-hari.',
+      launch: 'Susun target kebiasaan realistis, pengingat atau jurnal pribadi, kelompok saling mendukung, serta kegiatan kepedulian sosial.',
+      unite: 'Libatkan keluarga, pengurus masjid, majelis taklim, pemuda, dan komunitas sosial.',
+      measure: 'Peserta mencatat perkembangan kebiasaan yang dipilih dan terlibat dalam kegiatan sosial sesuai kemampuan.'
+    },
+    'Integritas, kejujuran, dan antikorupsi': {
+      value: 'Terwujudnya perilaku jujur, amanah, disiplin, adil, dan bertanggung jawab dalam kehidupan sehari-hari.',
+      analyze: 'Petakan pemahaman dan contoh dilema integritas di keluarga, sekolah, organisasi, atau pelayanan masyarakat.',
+      launch: 'Laksanakan studi kasus, refleksi nilai amanah, latihan pengambilan keputusan etis, dan komitmen perilaku nyata.',
+      unite: 'Libatkan sekolah, pemerintah desa, tokoh agama, organisasi pemuda, dan mitra edukasi antikorupsi.',
+      measure: 'Peserta mampu menganalisis studi kasus integritas dan menunjukkan penerapan komitmen perilaku yang dapat diamati.'
+    }
+  };
+
+  const needReferences = {
+    'Ketahanan keluarga': ['Penguatan komunikasi dan penyelesaian konflik keluarga secara sehat', 'Pengasuhan anak dan pembagian peran keluarga yang bertanggung jawab', 'Pendampingan keluarga sakinah dan akses konsultasi sesuai kebutuhan'],
+    'Anak yatim, terlantar, dan kelompok rentan': ['Pendampingan agama dan akhlak yang aman serta sesuai usia', 'Dukungan pendidikan, motivasi belajar, dan keterlibatan pengasuh', 'Pemetaan kebutuhan dasar, perlindungan, dan rujukan layanan sosial'],
+    'Literasi Al-Qur’an dan pemahaman ibadah': ['Peningkatan kemampuan membaca Al-Qur’an sesuai tingkat kemampuan', 'Bimbingan praktik ibadah dasar yang benar dan mudah dipahami', 'Pendampingan belajar rutin dengan metode yang sesuai kebutuhan peserta'],
+    'Akhlak dan budi pekerti generasi muda': ['Penguatan kejujuran, disiplin, tanggung jawab, dan kesantunan', 'Pendampingan pengendalian emosi dan pengambilan keputusan yang baik', 'Keteladanan dan dukungan lingkungan untuk membentuk kebiasaan positif'],
+    'Kerukunan dan moderasi beragama': ['Peningkatan pemahaman saling menghormati dalam perbedaan', 'Ruang dialog yang aman untuk mencegah prasangka dan kesalahpahaman', 'Penguatan kerja sama sosial lintas kelompok secara damai'],
+    'Kerentanan lansia dan kesepian sosial': ['Dukungan spiritual dan bimbingan ibadah yang ramah lansia', 'Peningkatan interaksi sosial dan dukungan keluarga atau komunitas', 'Pemetaan kebutuhan pendampingan dan akses layanan sosial yang sesuai'],
+    'Pemberdayaan ekonomi umat': ['Peningkatan keterampilan dan pengetahuan pengelolaan usaha sederhana', 'Literasi keuangan keluarga dan perencanaan pengeluaran', 'Akses informasi pelatihan, jejaring usaha, dan program pemberdayaan yang relevan'],
+    'Literasi digital dan hoaks keagamaan': ['Kemampuan memeriksa sumber dan memverifikasi informasi keagamaan', 'Penguatan etika bermedia dan tanggung jawab sebelum membagikan konten', 'Pengetahuan keamanan digital dan cara mengenali konten berisiko'],
+    'Konsistensi ibadah dan kepedulian sosial': ['Pembentukan kebiasaan ibadah yang realistis dan konsisten', 'Dukungan lingkungan untuk menjaga rutinitas ibadah', 'Penguatan empati dan keterlibatan dalam kegiatan kepedulian sosial'],
+    'Integritas, kejujuran, dan antikorupsi': ['Pemahaman nilai amanah, kejujuran, dan tanggung jawab dalam keseharian', 'Kemampuan mengenali dan menyikapi dilema etika secara tepat', 'Pembiasaan perilaku berintegritas dalam keluarga, organisasi, atau pelayanan']
+  };
+
+  function updateNeedReferences() {
+    const current = needReference.value;
+    const options = needReferences[problem.value] || [];
+    needReference.innerHTML = '<option value="">Pilih referensi kebutuhan atau isi sendiri di bawah</option>' +
+      options.map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join('') +
+      '<option value="__custom__">Isi sendiri kebutuhan utama</option>';
+    if (options.includes(current) || current === '__custom__') needReference.value = current;
+  }
+  needReference.addEventListener('change', () => {
+    if (needReference.value && needReference.value !== '__custom__') need.value = needReference.value;
+    if (needReference.value === '__custom__') { need.value = ''; need.focus(); }
+  });
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function showOther() {
+    const custom = problem.value === '__other__';
+    otherWrap.classList.toggle('hidden', !custom);
+    if (custom) otherProblem.focus();
+  }
+  problem.addEventListener('change', showOther);
+  problem.addEventListener('change', updateNeedReferences);
+  groupName.addEventListener('change', () => {
+    const custom = groupName.value === '__other_group__';
+    otherGroupWrap.classList.toggle('hidden', !custom);
+    if (custom) otherGroup.focus();
+  });
+
+  function generate() {
+    const selected = problem.value;
+    const issue = selected === '__other__' ? otherProblem.value.trim() : selected;
+    const audience = target.value.trim();
+    const needs = need.value.trim();
+    const time = duration.value;
+    const n = Math.max(1, Math.min(10000, parseInt(count.value, 10) || 1));
+    const counselor = $('counselorName').value.trim();
+    const role = $('position').value.trim();
+    const unit = $('workUnit').value.trim();
+    const group = groupName.value === '__other_group__' ? otherGroup.value.trim() : groupName.value;
+    const address = $('groupAddress').value.trim();
+    if (!issue) { otherProblem.focus(); otherProblem.setCustomValidity('Tuliskan masalah prioritas terlebih dahulu.'); otherProblem.reportValidity(); return; }
+    otherProblem.setCustomValidity('');
+    if (!audience || !needs) { (audience ? need : target).focus(); return; }
+    const p = presets[issue] || {
+      value: 'Terwujudnya masyarakat yang lebih berdaya, berakhlak, dan memperoleh dukungan sesuai kebutuhan yang teridentifikasi.',
+      analyze: 'Lakukan dialog dan pemetaan singkat untuk memahami akar masalah, kelompok terdampak, aset masyarakat, serta kebutuhan yang paling mendesak.',
+      launch: 'Rancang penyuluhan yang relevan dengan masalah, dilengkapi praktik atau pendampingan, target perubahan, dan catatan perkembangan.',
+      unite: 'Pilih mitra berdasarkan kebutuhan dan kewenangan: keluarga, tokoh masyarakat, pemerintah setempat, lembaga pendidikan, atau layanan profesional terkait.',
+      measure: 'Bandingkan kondisi awal dan akhir dengan indikator yang relevan, bukti sederhana, serta tindak lanjut bagi sasaran yang masih membutuhkan dukungan.'
+    };
+    const safeIssue = escapeHtml(issue), safeAudience = escapeHtml(audience), safeNeeds = escapeHtml(needs), safeTime = escapeHtml(time);
+    const identity = `<h3>Identitas Penyuluh dan Kelompok Binaan</h3><p><strong>Nama penyuluh:</strong> ${escapeHtml(counselor || 'Belum diisi')}<br><strong>Jabatan:</strong> ${escapeHtml(role || 'Belum diisi')}<br><strong>Asal satuan kerja:</strong> ${escapeHtml(unit || 'Belum diisi')}<br><strong>Kelompok binaan:</strong> ${escapeHtml(group || 'Belum diisi')}<br><strong>Alamat binaan:</strong> ${escapeHtml(address || 'Belum diisi')}</p>`;
+    const minTarget = Math.max(1, Math.ceil(n * 0.75));
+    const output = `
+      <span class="pill">HASIL RANCANGAN PROGRAM VALUE PENYULUH • ${safeTime.toUpperCase()}</span>
+      <h2>Program Pendampingan ${safeIssue}</h2>
+      ${identity}
+      <p><strong>Sasaran:</strong> ${safeAudience} (${n} orang, perkiraan)<br><strong>Kebutuhan utama:</strong> ${safeNeeds}</p>
+      <h3>Tujuan program</h3><p>Mendorong perubahan positif pada ${safeAudience.toLowerCase()} melalui penyuluhan agama Islam, pendampingan yang sesuai kebutuhan, dan kolaborasi lintas pihak selama ${safeTime}.</p>
+      <h3>Rancangan metode VALUE</h3>
+      <div class="value-list">
+        <div class="value-item"><strong class="v">V • Value — Nilai yang diwujudkan</strong><p>${escapeHtml(p.value)}</p></div>
+        <div class="value-item"><strong class="a">A • Analyze — Analisis kebutuhan</strong><p>${escapeHtml(p.analyze)} Kebutuhan utama yang diinput: ${safeNeeds}</p></div>
+        <div class="value-item"><strong class="l">L • Launch — Solusi dan pelaksanaan</strong><p>${escapeHtml(p.launch)} Tetapkan kegiatan dan frekuensi berdasarkan kondisi sasaran.</p></div>
+        <div class="value-item"><strong class="u">U • Unite — Kolaborasi</strong><p>${escapeHtml(p.unite)}</p></div>
+        <div class="value-item"><strong class="e">E • Evaluate — Evaluasi dampak</strong><p>${escapeHtml(p.measure)}</p></div>
+      </div>
+      <h3>Indikator dampak awal (target simulasi)</h3>
+      <ul><li>${n} sasaran terpetakan kebutuhan awalnya.</li><li>Minimal ${minTarget} sasaran mengikuti pendampingan sesuai rencana.</li><li>Di akhir ${safeTime}, lakukan pengukuran ulang terhadap 1–3 perilaku atau kondisi yang relevan dengan masalah ini.</li><li>Catat perubahan, bukti pendukung, dan kebutuhan tindak lanjut; tetapkan target akhir setelah kondisi awal diketahui.</li></ul>
+      <h3>Keberlanjutan</h3><p>Susun jadwal pemantauan berkala, tunjuk mitra penggerak, dokumentasikan perkembangan, dan perbaiki program berdasarkan hasil evaluasi. Kasus yang melampaui kewenangan penyuluh perlu dirujuk kepada pihak profesional atau instansi berwenang.</p>
+      <div class="notice"><strong>Catatan:</strong> Ini adalah hasil rancangan awal program, bukan diagnosis atau hasil aktual. Validasi indikator dan target berdasarkan asesmen awal, sumber daya, keselamatan sasaran, serta kewenangan Penyuluh Agama Islam.</div>
+      <div class="btn-row"><button class="primary" id="copyResult" type="button">Salin rancangan</button><button class="secondary" id="printResult" type="button">Cetak / Simpan PDF</button></div>
+      <p id="copyStatus" class="hint" role="status"></p>`;
+    result.innerHTML = output;
+    result.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+    $('copyResult').addEventListener('click', copyResult);
+    $('printResult').addEventListener('click', () => window.print());
+    result.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function copyResult() {
+    const plain = result.innerText.replace('Salin rancangan\nCetak / Simpan PDF','').trim();
+    const status = $('copyStatus');
+    const area = document.createElement('textarea');
+    area.value = plain;
+    area.style.position = 'fixed'; area.style.opacity = '0';
+    document.body.appendChild(area); area.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    area.remove();
+    status.textContent = ok ? 'Rancangan disalin. Anda dapat menempelkannya ke dokumen atau slide.' : 'Salin manual teks rancangan dari panel ini.';
+  }
+  function reset() {
+    problem.selectedIndex = 0;
+    otherProblem.value = '';
+    $('counselorName').value = ''; $('position').value = ''; $('workUnit').value = '';
+    groupName.selectedIndex = 0; otherGroup.value = ''; otherGroupWrap.classList.add('hidden'); $('groupAddress').value = '';
+    target.value = 'Remaja di wilayah binaan';
+    need.value = 'Pembinaan budi pekerti dengan pendekatan personal';
+    needReference.value = '';
+    updateNeedReferences();
+    duration.value = '3 bulan'; count.value = '20';
+    showOther(); result.classList.add('hidden'); placeholder.classList.remove('hidden');
+  }
+  $('generate').addEventListener('click', generate);
+  $('reset').addEventListener('click', reset);
+  updateNeedReferences();
+  showOther();
+})();
+</script>
+</body>
+</html>
